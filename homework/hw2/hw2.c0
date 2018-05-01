@@ -1,0 +1,53 @@
+#use <string>
+#use <conio>
+#use <rand>
+
+int quot (int x, int y) 
+    //@requires y != 0;
+{
+    return x / y;
+}
+
+int rem (int x, int y) 
+    //@requires y != 0;
+{
+    return x % y;
+}
+
+string int2hex (int x) {
+    string ans = "";
+    int t = x;
+    int r = 0;
+    while (t != 0) {
+        r = t % 16;
+        t = t / 16;
+        if (r >= 10) {
+            ans = string_join(string_fromchar(char_chr(char_ord('A') + (r % 10))), ans);
+        } else {
+            ans = string_join(string_fromchar(char_chr(char_ord('0') + r)), ans);
+        }
+    }
+    ans = string_join("0x", ans);
+    return ans;
+}
+
+int lsr (int x, int s) {
+    int mask = 0x7fffffff;
+    for (int i = 0 ; i < s ; i = i +1) {
+        x = (x >> 1) & mask;
+    }
+    return x;
+}
+
+void check(int seed， int round) {
+    rand_t r = init_rand(seed);
+    int s = 0;
+    int d = 1;
+    while (d == 0) d = rand(r);
+    for (int i = 0 ; i < round; i = i + 1) {
+        s = rand(r);
+        d = rand(r);
+        while (d == 0) d = rand(r);
+        if (quot(s,d) * d + rem(s,d) != s) error("Failed!");
+    }
+}

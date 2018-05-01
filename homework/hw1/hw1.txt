@@ -1,0 +1,57 @@
+Exercise 1. Rewrite first POW and then f so that it signals an error in case of
+an overflow rather than silently working in modular arithmetic. You can use the
+statement error("Overflow"); to signal an overflow.
+
+/*
+ * Mystery function with a bug or two
+ *
+ * 15-122 Principles of Imperative Computation
+ */
+
+// Specification function!
+int POW(int b, int e)
+//@requires e >= 0;
+{
+  if (e == 0) return 1;
+  int pr = POW(b, e-1);
+  int r = pr * b;
+  if (r / b != pr) error("Overflow!");
+  return r;
+}
+
+int f (int x, int y) 
+//@requires y >= 0;
+//@ensures POW(x, y) == \result;
+{
+  int b = x; /* Line 19 */
+  int e = y; /* Line 20 */
+  int r = 1; /* Line 21 */
+  int t = x;
+  while (e > 0) /* Line 22 */
+  //@loop_invariant e >= 0; /* Line 23 */
+  //@loop_invariant POW(b, e) * r == POW(x, y); //f（9,5)
+  {
+    if (e % 2 == 1) { /* Line 26 */
+      if (t != x && b / t != t) error("Overflow!");
+      t = r;
+      r = b * r;      /* Line 27 */
+      if (r/t != b) error("Overflow!");
+    }
+    t = b;
+    b = b * b;        /* Line 29 */
+    e = e / 2;        /* Line 30 */
+  }
+  if (r < 0) error("Overflow!");
+  return r;
+}
+
+
+Exercise 2. Find an input for f that fails our first guess of a loop invariant:
+//@loop_invariant POW(b,e) == POW(x,y);
+
+只要e不为0均满足，例如f(9,5)。
+
+
+1. code 可能
+2. code 
+3. code 无符号数除以2

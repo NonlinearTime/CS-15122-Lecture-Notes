@@ -1,0 +1,56 @@
+Exercise 1. Write functions quot and rem that calculate quotient and remainder
+as explained in Section 7. Your functions should have the property that
+quot(x,y)*y + rem(x,y) == x;
+for all ints x and y unless quot overflows. How is that possible?
+
+可能，代码如下。
+
+int quot (int x, int y) 
+    //@requires y != 0;
+{
+    return x / y;
+}
+
+int rem (int x, int y) 
+    //@requires y != 0;
+{
+    return x % y;
+}
+
+Exercise 2. Write a function int2hex that returns a string containing the hexadecimal representation of a given integer as a string. Your function should have
+prototype
+string int2hex(int x);
+(The prototype of a function is the function without its body: the prototype gives
+the function name and the type of its arguments.)
+
+string int2hex (int x) {
+    string ans = "";
+    int t = x;
+    int r = 0;
+    while (t != 0) {
+        r = t % 16;
+        t = t / 16;
+        if (r >= 10) {
+            ans = string_join(string_fromchar(char_chr(char_ord('A') + (r % 10))), ans);
+        } else {
+            ans = string_join(string_fromchar(char_chr(char_ord('0') + r)), ans);
+        }
+    }
+    ans = string_join("0x", ans);
+    return ans;
+}
+
+Exercise 3. Write a function lsr (logical shift right), which is like right shift
+(>>) except that it fills the most significant bits with zeroes instead of copying
+the sign bit. Explain what lsr(x,1) means on integers in two’s complement
+representation.
+
+lsr(x,1)代表无符号数除以2。
+
+int lsr (int x, int s) {
+    int mask = 0x7fffffff;
+    for (int i = 0 ; i < s ; i = i +1) {
+        x = (x >> 1) & mask;
+    }
+    return x;
+}
