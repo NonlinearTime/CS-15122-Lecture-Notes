@@ -1,0 +1,47 @@
+#use <conio>
+
+int search(int x, int[] A, int n)
+//@requires n == \length(A);
+//@requires is_sorted(A, 0, n);
+/*@ensures (\result == -1 && !is_in(x, A, 0, n))
+        || (0 <= \result && \result < n && A[\result] == x); @*/
+{
+  int lo = 0;
+  int hi = n;
+
+  while (lo < hi)
+  //@loop_invariant 0 <= lo && lo <= hi && hi <= n;
+  //@loop_invariant !is_in(x, A,0,lo);
+  //@loop_invariant !is_in(x, A,hi,n);
+  {
+    // int mid = lo;            // This is linear search!
+    // int mid = (hi + lo)/2;   // Jon Bentley's bug!
+    int mid = lo + (hi - lo)/2;
+    //@assert lo <= mid && mid < hi;
+
+    if (A[mid] == x) {
+      if (mid == 0 || A[mid - 1] < A[mid])
+          return mid;
+      else 
+          hi = mid;
+    }
+    if (A[mid] < x) {
+      //@assert mid + 1 <= hi;
+      //@assert !is_in(x, A,0,mid+1);
+      lo = mid+1;
+    } else { //@assert A[mid] > x;
+      //@assert !is_in(x, A,mid,n);
+      hi = mid;
+    }
+  }
+  //@assert lo == hi;
+  //@assert !is_in(x,A,0,n);
+  return -1;
+}
+
+void main() {
+  int[] A = alloc_array(int, 10);
+  for (int i=0; i<10; i++) A[i] = i; // A is [0, 1, 2]
+  printInt(search(3,A,10));
+  println("");
+}

@@ -2,13 +2,6 @@ Exercise 1. Rewrite first POW and then f so that it signals an error in case of
 an overflow rather than silently working in modular arithmetic. You can use the
 statement error("Overflow"); to signal an overflow.
 
-/*
- * Mystery function with a bug or two
- *
- * 15-122 Principles of Imperative Computation
- */
-
-// Specification function!
 int POW(int b, int e)
 //@requires e >= 0;
 {
@@ -50,8 +43,3 @@ Exercise 2. Find an input for f that fails our first guess of a loop invariant:
 //@loop_invariant POW(b,e) == POW(x,y);
 
 只要e不为0均满足，例如f(9,5)。
-
-
-1. code 可能
-2. code 
-3. code 无符号数除以2

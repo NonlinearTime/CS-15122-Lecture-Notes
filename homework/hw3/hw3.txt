@@ -1,0 +1,51 @@
+Exercise 1. Write a function array_part that creates a copy of a part of a given
+array, namely the elements from position i to position j. Your function should
+have prototype
+int[] array_part(int[] A, int i, int j);
+Develop a specification and loop invariants for this function. Prove that it works
+correctly by checking the loop invariant and proving array bounds.
+解：代码如下
+    int[] array_copy(int[] A, int i, int j)
+    //@requires i >= 0 && j >= 0 && j >= i && j < \length(A);
+    //@ensures \length(\result) == j - i + 1;
+    {
+        int n =  j - i + 1;
+        int[] B = alloc_array(int, n);
+
+        for (int index = 0; index < n; index++)
+        //@loop_invariant 0 <= index;
+        {
+            B[index] = A[i + index];
+        }
+
+        return B;
+    }
+
+Exercise 2. Write a function copy_into that copies a part of a given array
+source, namely n elements starting at position i, into another given array target,
+starting at position j. Your function should have prototype
+Lecture 3: Arrays 10
+int copy_into(int[] source, int i, int n, int[] target, int j);
+As an extra service, make your function return the last position in the target array that it entered data into. Develop a specification and loop invariants for this
+function. Prove that it works correctly by checking the loop invariant and proving
+array bounds. What is difficult about this case?
+解：代码如下
+    int copy_into(int[] source, int i, int n, int[] target, int j) 
+    //@requires i >= 0 && j >= 0 && i + n < \length(source) && j + n < \length(target);
+    //#ensures \result < \length(target);
+    {
+        for (int index = 0 ; index < n ; index++) 
+        //@loop_invariant 0 <= index;
+        {
+            target[j+index] = source[i+index];
+        }
+        return j+n-1;
+    }
+
+Exercise 3. Can you develop a reasonable (non-degenerate) and useful function
+with the following prototype? Discuss.
+    int f(int[] A);
+答：无法想到如何构建这样一个有意义的非退化函数，因为C0不支持运行时获取数组长度，且参数列表中未给出
+数组长度，无法安全操作数组。且C0不支持类型转换，无法将A数组地址转换为int返回，且不支持指向A的指针，
+另外如果要返回与A有关的int的话，可以返回A中的一个元素，但是这需要添加前置约束，不知道这样是否符合
+题目要求。

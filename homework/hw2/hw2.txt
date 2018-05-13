@@ -45,7 +45,7 @@ Exercise 3. Write a function lsr (logical shift right), which is like right shif
 the sign bit. Explain what lsr(x,1) means on integers in two’s complement
 representation.
 
-lsr(x,1)代表无符号数除以2。
+lsr(x,1)代表x作为无符号数除以2后的结果。
 
 int lsr (int x, int s) {
     int mask = 0x7fffffff;

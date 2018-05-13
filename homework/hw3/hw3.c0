@@ -1,0 +1,50 @@
+#use <conio>
+int[] array_copy(int[] A, int i, int j)
+//@requires i >= 0 && j >= 0 && j >= i && j < \length(A);
+//@ensures \length(\result) == j - i + 1;
+{
+    int n =  j - i + 1;
+    int[] B = alloc_array(int, n);
+
+    for (int index = 0; index < n; index++)
+    //@loop_invariant 0 <= index;
+    {
+        B[index] = A[i + index];
+    }
+
+    return B;
+}
+
+int copy_into(int[] source, int i, int n, int[] target, int j) 
+//@requires i >= 0 && j >= 0 && i + n < \length(source) && j + n < \length(target);
+//#ensures \result < \length(target);
+{
+    for (int index = 0 ; index < n ; index++) 
+    //@loop_invariant 0 <= index;
+    {
+        target[j+index] = source[i+index];
+    }
+    return j+n-1;
+}
+
+int f(int[] A) {
+    return A;
+}
+
+
+int main() {
+  int[] A = alloc_array(int, 10);
+  for (int i=0; i<10; i++) A[i] = i; // A is [0, 1, 2]
+
+  int[] B = array_copy(A,3,7);
+  for (int i = 0 ; i < 5 ; i++) printint(B[i]);
+  println("");
+  int[] C = array_copy(B,2,2);
+  for (int i = 0 ; i < 1 ; i++) printint(C[i]);
+  println("");
+  int[] D = alloc_array(int, 10);
+  copy_into(A,2,3,D,0);
+  for (int i = 0 ; i < 10 ; i++) printint(D[i]);
+  println("");
+  return 0;
+}
