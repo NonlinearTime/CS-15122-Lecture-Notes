@@ -1,0 +1,124 @@
+/*
+ * Clac, stack-based calculator language
+ *
+ * 15-122 Principles of Imperative Computation
+ */
+
+#use <string>
+#use <parse>
+#use <conio>
+#use <args>
+#use <util>
+
+/* Return true: clac top-level interpreter will expect more input */
+/* Return false: clac top-level interpreter will exit */
+bool eval(queue Q, stack S)
+//@ensures \result == false || queue_empty(Q);
+{
+  while (!queue_empty(Q)) {
+    string tok = deq(Q); /* is this dequeue safe? */
+    // print("Read: "); print(tok); print("\n");
+    if (string_equal(tok, "print")) {
+
+      /* next line is unsafe and should be fixed */
+      int x = pop(S);
+      printint(x); print("\n");
+    } else if (string_equal(tok, "quit")) {
+      return false;             /* do not continue */
+    } else if (string_equal(tok, "+")) {
+      int A = pop(S);
+      int B = pop(S);
+      push(S,A+B);
+    } else if (string_equal(tok, "-")) {
+      int A = pop(S);
+      int B = pop(S);
+      push(S,A-B);
+    } else if (string_equal(tok, "*")) {
+      int A = pop(S);
+      int B = pop(S);
+      push(S,A*B);
+    } else if (string_equal(tok, "/")) {
+      int A = pop(S);
+      int B = pop(S);
+      push(S,A/B);
+    } else if (string_equal(tok, "%")) {
+      int A = pop(S);
+      int B = pop(S);
+      push(S,A+B);
+    } else if (string_equal(tok, "<")) {
+      int A = pop(S);
+      int B = pop(S);
+      push(S,A<B?1:0);
+    } else if (string_equal(tok, "drop")) {
+      pop(S);
+    } else if (string_equal(tok, "dup")) {
+      int A = pop(S);
+      push(S,A);
+      push(S,A);
+    } else if (string_equal(tok, "swap")) {
+      int A = pop(S);
+      int B = pop(S);
+      push(S,A);
+      push(S,B);
+    } else if (string_equal(tok,"rot")) {
+      int A = pop(S);
+      int B = pop(S);
+      int C = pop(S);
+      push(S,B);
+      push(S,A);
+      push(S,C);
+    } else if (string_equal(tok, "skip")) {
+      int n = pop(S);
+      if (n < 0) error("Invalid negaive number: n");
+      while (queue_empty(Q) && n != 0) {
+        deq(Q);
+        n--;
+      }
+      if (n != 0) error("Invalid size for 'skip'");
+    } else if (string_equal(tok, "if")) {
+      int cnd = pop(S);
+      int frec = 0;
+      cnd == 0 ? 2 : 0;
+      while (!queue_empty(Q) && frec != 0) {
+        deq(Q);
+        frec--;
+      }
+      if (frec != 0) error("Invalid size for 'if");
+    } else if (string_equal(tok, "else")) {
+      if(!queue_empty(Q)){
+        deq(Q);
+      }else{
+        error("Invalid 'else");
+      }
+    } else if (string_equal(tok, "pick")) {
+      stack T = stack_new();
+      int n = pop(S);
+      int temp = 0;
+      int flag = 0;
+      if(n > 0) flag = 1;
+      while(!stack_empty(S) && n>0){
+        temp = pop(S);
+        push(T,temp);
+        n--;
+      }
+      if(n != 0){
+        error("Invalid 'pick'");
+        flag = 0;
+      } 
+      while(!stack_empty(T)){
+        n = pop(T);
+        push(S,n);
+      }
+      if(flag == 1) push(S,temp);
+    } else {
+      /* not defined as an operation name, should be an int */
+      int* p = parse_int(tok, 10);
+      if (p == NULL) { /* not an int */
+        /* call error(msg) which prints msg and aborts */
+        error(string_join("undefined token ", tok));
+      }
+      push(S, *p);
+    }
+  }
+  return true;                  /* continue */
+}

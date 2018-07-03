@@ -1,0 +1,30 @@
+#use <conio>
+#use <rand>
+
+int main() {
+    int len = 10;
+    // rand_t r = init_rand(2018 + len);
+    string[] array_test = alloc_array(string, len);
+    for (int i = 0 ; i < len - 2 ; i++) {
+        // int rd = rand(r);
+        array_test[i] = string_fromint(i);
+        print(array_test[i]);
+    }
+    array_test[len-2] = "8";
+    array_test[len-1] = "8";
+    print(array_test[len-2]);
+    print(array_test[len-1]);
+    println("");
+    printbool(all_distinct(array_test,len));
+    println("");
+    int lenB = count_distinct(array_test,len);
+    printint(lenB);
+    println("");
+    string[] B = remove_duplicates(array_test, len);
+    //@assert \length(B) == count_distinct(array_test,len);
+    for (int i = 0 ; i < lenB ; i++) {
+        print(B[i]);
+    }
+    println("");
+    return 0;
+}

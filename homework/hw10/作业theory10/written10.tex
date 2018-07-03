@@ -1,0 +1,431 @@
+\documentclass[12pt]{exam}
+\newcommand{\hwnumber}{10}
+\newcommand{\hwname}{Memory Management and AVL Trees}
+
+%%% begin hw-packages-and-macros.tex
+\usepackage{amsmath}
+\usepackage{xeCJK}% 调用 xeCJK 宏包
+
+\usepackage[left=1in, right=1in, top=1in, bottom=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage[all]{xy}
+\usepackage{wrapfig}
+\usepackage{fancyvrb}
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+
+\newcommand{\fillinlistings}{
+    \lstset{ %
+    language=C, numbers=left, numberstyle=\footnotesize, stepnumber=1,
+    numbersep=4pt, showspaces=false, showstringspaces=false, tabsize=4,
+    breaklines=true, breakatwhitespace=false,
+    basicstyle=\normalsize\fontfamily{fvm}\selectfont, columns=flexible,
+    mathescape=true, escapeinside={(*}{*)},
+    morekeywords={alloc, allocarray, assert},
+    otherkeywords={@requires, @ensures, @loop_invariant, @assert}
+    }
+}
+\newcommand{\normallistings}{
+    \lstset{ %
+    language=C, numbers=left, numberstyle=\footnotesize, stepnumber=1,
+    numbersep=4pt, showspaces=false, showstringspaces=false, tabsize=4,
+    breaklines=true, breakatwhitespace=false,
+    basicstyle=\footnotesize\fontfamily{fvm}\selectfont, columns=flexible,
+    mathescape=true, escapeinside={(*}{*)},
+    morekeywords={alloc, allocarray, assert},
+    otherkeywords={@requires, @ensures, @loop_invariant, @assert}
+    }
+}
+
+\newcommand{\semester}{Spring 2014}
+
+\newcommand{\Cnought}{C$0$}
+\newcommand{\modulo}{\ \texttt{\%}\ }
+\newcommand{\lshift}{\ \texttt{<<}\ }
+\newcommand{\rshift}{\ \texttt{>>}\ }
+\newcommand{\cgeq}{\ \texttt{>=}\ }
+\newtheorem{task}{Task}
+\newtheorem{ectask}{Extra Credit Task}
+\newtheorem{exercise}{Exercise}
+
+\newcommand{\answerbox}[1]{
+\begin{framed}
+\hspace{5.65in}
+\vspace{#1}
+\end{framed}}
+
+\pagestyle{head}
+
+
+\headrule \header{\textbf{15-122 Written Homework \hwnumber}}{}{\textbf{Page
+\thepage\ of \numpages}}
+
+\pointsinmargin \printanswers
+
+\setlength\answerlinelength{2in} \setlength\answerskip{0.3in}
+%%% end hw-packages-and-macros.tex
+
+\begin{document}
+
+\addpoints
+\begin{center}
+\textbf{\large{15-122 : Principles of Imperative Computation, \semester
+\\  \vspace{0.2in} Written Homework~\hwnumber
+}}
+
+ \vspace{0.2in}
+
+ \large{Due before class: Thursday, April 3, 2014}
+\end{center}
+
+\vspace{0.5in}
+
+\hbox to \textwidth{Name:\enspace\hrulefill}
+
+
+\vspace{0.2in}
+
+\hbox to \textwidth{Andrew ID:\enspace\hrulefill}
+
+\vspace{0.2in}
+
+\hbox to \textwidth{Recitation:\enspace\hrulefill}
+
+
+\vspace{0.5in}
+
+\noindent The written portion of this week's homework will give you some
+practice working with C programming issues and AVL trees.
+You can either type up your solutions or write them
+\textit{neatly} by hand, and you should submit your work in class on the
+due date just before lecture begins. Please remember to \textit{staple}
+your written homework before submission.
+\vspace{0.2in}
+
+\begin{center}
+\gradetable[v][questions]
+\end{center}
+
+\vspace{0.2in}
+\begin{center}
+  \Large{You must do this assignment in one of two ways and bring the stapled
+         printout to the handin box on Thursday:
+
+\bigskip
+    1) Write your answers \textit{neatly} on a printout of this PDF.
+
+\bigskip
+    2) Use the TeX template at
+    \url{http://www.cs.cmu.edu/afs/cs.cmu.edu/academic/class/15122-s14/www/theory10.tgz}
+ }
+\end{center}
+
+
+\newpage
+\begin{questions}
+
+\question{\textbf{C Program Behavior}}
+
+For each of the following problems, state what is wrong with the
+code in one sentence. Do not just try to compile it and write down the
+error message. (Some of these will compile without error, and some will even run and
+produce output, but they all contain conceptual errors that may affect correctness.)
+Read the code and explain what is being done wrong, conceptually.
+
+\begin{parts}
+\part[1]
+
+\begin{verbatim}
+#include <stdio.h>
+#include <string.h>
+int main() {
+   ...
+   char *w;
+   strcpy(w,"C programming");      // copy string to w
+   printf("%s\n", w);
+   ...
+   return 0;
+}
+\end{verbatim}
+
+\begin{solution}
+w声明为字符型指针，未初始化，即未分配空间，为悬挂指针。向悬挂指针拷贝字符串将导致段错误。
+
+\end{solution}
+
+\part[1]
+
+\begin{verbatim}
+#include <stdio.h>
+#define MULT(X,Y) (X*Y)
+int main() {
+   ...
+   int c = MULT(2+3,3+4);
+   printf("(2+3)*(3+4) is = %d\n", c);
+   ...
+   return 0;
+}
+\end{verbatim}
+
+\begin{solution}
+宏定义错误，导致计算实际为2+3*3+4，存在二义性。
+\end{solution}
+
+\newpage
+\part[1]
+
+\begin{verbatim}
+#include <stdlib.h>
+#include "xalloc.h"
+int main() {
+   int *a = xmalloc(100);
+   for (int i=0; i<100; i++)
+      a[i]=i;
+   ...
+   free(a);
+   return 0;
+}
+\end{verbatim}
+
+\begin{solution}
+a分配内存空间大小错误，循环赋值将超出抛出段错误异常。
+且xmalloc非标准库。
+\end{solution}
+
+
+\part[1]
+This code fragment shows a C function that is called from another function. It is
+supposed to return the result only if no overflow occurs.
+\textit{Hint:} You might
+want to read the section on integers in the C0 to C tutorial
+\url{http://c0.typesafety.net/tutorial/From-C0-to-C:-Basics.html#wiki-integers}.
+
+\begin{verbatim}
+
+#include <assert.h>
+int oadd(int x, int y) {
+   int result = x + y;
+   if (x > 0 && y > 0) assert(result > 0);
+   if (x < 0 && y < 0) assert(result < 0);
+   return result;
+}
+\end{verbatim}
+
+\begin{solution}
+x+有可能导致有符号溢出，在C语言中属于Undefined Behavior
+\end{solution}
+
+
+\end{parts}
+
+
+\newpage
+\question{\textbf{Pass by reference using C}}
+
+At various points in our C0 programming experience we had to use
+somewhat awkward workarounds to deal with {\it functions that need to
+return more than one value}. The address-of operator (\verb"&") in C gives us a
+new way of dealing with this issue. In C, the expression \texttt{\&x} evaluates
+to the address of the variable \texttt{x}.
+
+\begin{parts}
+
+\part[2]
+Sometimes, a function needs to be able to both 1) signal whether it
+can return a result, and 2) return that result if it is able to. Consider the
+following function \texttt{parse\_string} that parses a string into an integer
+if it is possible:
+
+\vspace{0.1in}
+\begin{verbatim}
+bool parse(char *s, int *i);
+// Returns true iff parse succeeds
+
+void parse_string(char *s) {
+  REQUIRES(s != NULL);
+  int *i = xmalloc(sizeof(int));
+  if (parse(s, i))
+    printf("Success: %d.\n", *i);
+  else
+    printf("Failure.\n");
+  free(i);
+  return;
+}
+\end{verbatim}
+\vspace{0.1in}
+
+The \texttt{parse\_string} function relies on \texttt{parse} which both
+sets \text{*i} to an integer equivalent to the integer pattern in \texttt{*s}
+(if possible) and also returns a boolean value of true if the parse succeeds,
+or false otherwise.
+
+Using the address-of operator, rewrite the body of the \verb'parse_string'
+function so that it does not heap-allocate, free, or leak any memory on the
+heap. You may assume \verb"parse" has been implemented (its prototype
+is given above).
+
+\begin{solution}
+\begin{verbatim}
+void parse_string(char *s) {
+  REQUIRES(s != NULL);
+  int i;
+  if (parse(s, &i))
+    printf("Success: %d.\n", *i);
+  else
+    printf("Failure.\n");
+  return;
+}
+\end{verbatim}
+\end{solution}
+
+\newpage
+\part[2] In both C and C0, multiple values can be `returned' by bundling
+them in a struct:
+
+\begin{verbatim}
+struct bundle { int x; int y; };
+struct bundle *foo(int p) {
+  ...
+  struct bundle *A = xmalloc(sizeof(struct bundle));
+  A->x = e1;     // first value to be returned
+  A->y = e2;     // second value to be returned
+  return A;      // return both values together as a struct
+}
+int main() {
+  ...
+  struct bundle *B = foo(p);
+  int x = B->x;
+  int y = B->y;
+  free(B);
+  ...
+}
+\end{verbatim}
+
+Rewrite the declaration and the last few lines of the function \verb'foo',
+as well as the snippet of \verb'main', to avoid heap-allocating, freeing, or
+leaking any memory on the heap. The rest of the code (\verb"...") should continue
+to behave exactly as it did before.
+
+\begin{solution}
+
+\vspace{15pt}
+\begin{verbatim}
+void foo(struct bundle * A, int p) {
+  ...
+  A->x = e1;
+  A->y = e2;
+  return;
+}
+
+int main() {
+  ...
+  struct bundle B;
+
+  foo(&B, p);
+
+  int x = B->x;
+
+  int y = B->y;
+  ...
+}
+\end{verbatim}
+\end{solution}
+
+
+\end{parts}
+
+
+\newpage
+\question{\textbf{AVL Trees.}}
+
+\begin{parts}
+
+\part[3] Draw the AVL trees that result after successively
+inserting the following keys into an initially empty tree, in the
+order shown:
+
+\vspace{0.25in}
+\begin{center}
+\texttt{89, 79, 45, 58, 10, 63, 31}
+\end{center}
+\vspace{0.25in}
+
+Show the tree after each insertion and subsequent
+re-balancing (if any) is completed: the tree after the first element, \verb'89',
+is inserted into an empty tree, then the tree after \verb'79' is
+inserted into the first tree, and so on for a total of seven
+trees. Make it clear what order the trees are in.
+
+Be sure to maintain and restore the BST invariants and the additional
+balance invariant required for an AVL tree after each insert.
+
+\begin{solution}
+
+    \includegraphics[scale=0.6]{avl.png}
+\end{solution}
+
+\part
+Recall our definition for the height $h$ of a tree:
+\begin{quote}
+\textbf{The height of a tree is the maximum length of a path from the root to a leaf. So the empty tree has height 0, the tree with one node has height 1, and a balanced tree with three nodes has height 2.}
+\end{quote}
+The minimum number of nodes $m$ in a valid AVL tree is related to its
+height. The goal of this question is to quantify this relationship.
+
+\begin{subparts}
+\subpart[2] Fill in the table below relating the variables $h$ and $m$:
+\vspace{0.25in}
+
+\begin{center}
+\begin{tabular}{|c|c|}
+ \hline   \hspace{2mm} $h$  \hspace{2mm} & \hspace{2mm}  $m$ \hspace{2mm} \\[5pt]
+ \hline 0 & 0  \\[5pt]
+ \hline 1 & 1  \\[5pt]
+ \hline 2 & 2  \\[5pt]
+ \hline 3 & 4  \\[5pt]
+ \hline 4 & 7  \\[5pt]
+ \hline 5 & 12  \\[5pt]
+ \hline 6 & 20  \\[5pt]
+ \hline
+\end{tabular}
+\end{center}
+
+\vspace{0.25in}
+\subpart[1]
+Guided by the table in part (i), give an expression for $m$ as a function
+of $h$.
+Here's a hint: recall that the $n$th Fibonacci number $F(n)$ is defined by:
+\begin{align*}
+F(0) &= 0 \\
+F(1) &= 1 \\
+F(n) &= F(n-1) + F(n-2), \qquad n > 1
+\end{align*}
+You may find it useful to use the Fibonacci function $F(n)$ in your
+answer.  Your answer \underline{does not} need to be a closed form
+expression; it could be a recursive definition like the one for
+$F(n)$.
+
+\begin{solution}
+  \begin{align*}
+    M(0) &= 0 \\
+    M(1) &= 1 \\
+    M(n) &= M(n-1) + M(n-2) + 1, \qquad n > 1
+    \end{align*}
+\end{solution}
+
+\subpart[1] Give a closed form expression for $M(h)$, the
+\emph{maximum} number of nodes in a valid AVL tree of height $h$.
+
+\begin{solution}
+$M(h) = 2^{h} - 1$
+\vspace{10pt}
+\end{solution}
+
+\end{subparts}
+\end{parts}
+
+
+\end{questions}
+\end{document}

@@ -1,0 +1,20 @@
+#use <string>
+#use <rand>
+
+int main() 
+{
+    int len = 10;
+    rand_t r = init_rand(2018 + len);
+    string[] array_test = alloc_array(string, len);
+    for (int i = 0 ; i < len ; i++) {
+        int rd = rand(r);
+        array_test[i] = string_fromint(rd);
+    }
+    string[] res_test = sortcopy(array_test, 0, len);
+    //@assert \length(res_test) == len;
+    //@assert is_sorted(res_test,0,len);
+    for (int i = 0 ; i < len ; i++) {
+        //@assert binsearch(array_test[i], res_test, len) != -1;
+    }
+    return 0;
+}

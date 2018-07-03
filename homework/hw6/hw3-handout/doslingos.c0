@@ -1,0 +1,23 @@
+int count_vocab(string[] vocab, int[] freq, int v, 
+string tweetfile, bool fast)
+//@requires v == \length(vocab) && v == \length(freq);
+//@requires is_sorted(vocab, 0, v) && all_distinct(vocab, v);
+{
+    string_bundle bund = read_words(tweetfile);
+    int len = string_bundle_length(bund);
+    string[] tweet = string_bundle_array(bund);
+    int unknown = 0;
+    int index;
+    for (int i = 0 ; i < len ; i++) {
+        if (fast) {
+            index = binsearch(tweet[i], vocab, v);
+            if (index == -1) unknown++;
+            else freq[index]++;
+        } else {
+            index = linsearch(tweet[i], vocab, v);
+            if (index == -1) unknown++;
+            else freq[index]++;
+        }
+    }
+    return unknown;
+}

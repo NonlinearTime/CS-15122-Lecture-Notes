@@ -1,0 +1,48 @@
+#use <string>
+#use <conio>
+
+bool all_distinct(string[] A, int n)
+//@requires 0 <= n && n <= \length(A);
+//@requires is_sorted(A, 0, n);
+{
+    for (int i = 0 ; i < n - 1; i++) 
+    //@loop_invariant 0 <= i && i + 1 <= n ;
+    {
+        if (string_equal(A[i],A[i+1]))  return false;
+    }
+    return true;
+}
+
+int count_distinct(string[] A, int n)
+//@requires 0 <= n && n <= \length(A);
+//@requires is_sorted(A, 0, n);
+{
+    int cnt = 1;
+    for (int i = 1 ; i < n; i++) 
+    // @loop_invariant 0 < i && i <= n;
+    {   
+        if (!string_equal(A[i - 1],A[i])) cnt++;
+    } 
+    return cnt;
+}
+
+string[] remove_duplicates(string[] A, int n)
+//@requires 0 <= n && n <= \length(A);
+//@requires is_sorted(A, 0, n);
+{
+    int l = count_distinct(A,n);
+    string[] B = alloc_array(string, l);
+    int bIndex = 0;
+    B[bIndex] = A[0];
+    bIndex++; 
+    for (int i = 1 ; i < n ; i++) 
+    //@loop_invariant 1 <= i && i <= n;
+    {
+        if (!string_equal(A[i-1],A[i])) {
+            B[bIndex] = A[i];
+            bIndex++;
+        }
+    }
+    return B;
+}
+

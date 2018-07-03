@@ -1,0 +1,19 @@
+#use <conio>
+#use <rand>
+
+int main() {
+    string_bundle bund = read_words("texts/news_vocab_sorted.txt");
+    int len = string_bundle_length(bund);
+    string[] vocab = string_bundle_array(bund);
+    int[] freq = alloc_array(int,len);
+    int res = count_vocab(vocab, freq, len, "texts/scotttweet.txt",true);
+    printint(res);
+    println("");
+    res = count_vocab(vocab, freq, len, "texts/twitter_1k.txt",true);
+    printint(res);
+    println("");
+    res = count_vocab(vocab, freq, len, "texts/twitter_200k.txt",true);
+    printint(res);
+    println("");
+    return 0;
+}

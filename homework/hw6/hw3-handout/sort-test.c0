@@ -1,0 +1,17 @@
+#use <string>
+#use <rand>
+
+int main() 
+{
+    int len = 10;
+    rand_t r = init_rand(2018 + len);
+    string[] array_test = alloc_array(string, len);
+    for (int i = 0 ; i < len ; i++) {
+        int rd = rand(r);
+        array_test[i] = string_fromint(rd);
+    }
+    sort(array_test, 0, len);
+    //@assert \length(array_test) == len;
+    //@assert is_sorted(array_test,0,len);
+    return 0;
+}
